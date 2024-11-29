@@ -1,139 +1,211 @@
 package com.example.FitTrack;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
+import com.vaadin.flow.component.textfield.PasswordField;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.ArrayList;
-import java.util.List;
+@Route("")
+public class Authentication extends VerticalLayout {
 
-@Route("Home")
-public class Home extends VerticalLayout {
+    @Autowired
+    private ClientRepository clientRepository;
 
-    public Home() {
-        // Header Section with Styling
-        HorizontalLayout header = new HorizontalLayout();
-        header.setWidthFull();
-        header.setPadding(true);
-        header.setJustifyContentMode(JustifyContentMode.BETWEEN);
-        header.getStyle().set("background-color", "#f8f9fa").set("padding", "10px 20px").set("border-bottom", "1px solid #ddd");
+    // Fields to store user data across steps
+    private String name;
+    private String email;
+    private String password;
+    private int age;
+    private float height;
+    private float weight;
+    private String sex;
 
-        Span logo = new Span("Fittrack");
-        logo.getStyle()
+    public Authentication() {
+        showLoginPage();
+    }
+
+    private void showLoginPage() {
+        Div heading = new Div();
+        heading.setText("𝔉𝔦𝔱𝔗𝔯𝔞𝔠𝔨");
+        heading.getStyle()
                 .set("font-size", "24px")
-                .set("font-weight", "bold")
-                .set("color", "#333");
+                .set("font-weight", "bold");
 
-        Image profileImage = new Image("https://via.placeholder.com/40", "Profile");
-        profileImage.getStyle()
-                .set("border-radius", "50%")
-                .set("cursor", "pointer")
-                .set("width", "40px")
-                .set("height", "40px");
+        TextField emailField = new TextField();
+        emailField.setPlaceholder("Email");
 
-        header.add(logo, profileImage);
+        PasswordField passwordField = new PasswordField();
+        passwordField.setPlaceholder("Password");
 
-        // Sidebar Navigation with Styling
-        VerticalLayout sidebar = new VerticalLayout();
-        sidebar.setWidth("20%");
-        sidebar.getStyle()
-                .set("background-color", "#f4f4f4")
-                .set("padding", "20px")
-                .set("height", "100vh")
-                .set("box-shadow", "1px 0px 5px rgba(0,0,0,0.1)");
+        Button loginButton = new Button("Login");
+        loginButton.addClickListener(event -> {
+            // Authenticate user
+            Client client = clientRepository.findByEmail(emailField.getValue());
 
-        Span dashboardTitle = new Span("Management Dashboard");
-        dashboardTitle.getStyle().set("font-size", "18px").set("font-weight", "bold").set("color", "#444");
+            if (client != null && client.getPassword().equals(passwordField.getValue())) {
+                Notification.show("Login successful!", 3000, Notification.Position.MIDDLE);
 
-        Button overviewButton = createSidebarButton("Overview");
-        Button trainersButton = createSidebarButton("Trainers");
-        Button clientsButton = createSidebarButton("Clients");
-        Button groupsButton = createSidebarButton("Groups");
-        Button plansButton = createSidebarButton("Plans");
+                // Store logged-in user details in the session
+                UI.getCurrent().getSession().setAttribute(Client.class, client);
 
-        sidebar.add(dashboardTitle, overviewButton, trainersButton, clientsButton, groupsButton, plansButton);
+                if ("admin@fittrack.com".equals(client.getEmail())) {
+                    // Navigate to Admin page if it's an admin
+                    UI.getCurrent().navigate(Admin.class);
+                } else {
+                    // Navigate to UserPage if it's a normal user
+                    UI.getCurrent().navigate("UserPage");
+                }
+            } else {
+                Notification.show("Invalid email or password!", 3000, Notification.Position.MIDDLE);
+            }
+        });
 
-        // Main Content Area with Styling
-        VerticalLayout mainContent = new VerticalLayout();
-        mainContent.setWidth("80%");
-        mainContent.getStyle().set("padding", "20px");
 
-        Span title = new Span("Plans");
-        title.getStyle().set("font-size", "22px").set("font-weight", "bold").set("color", "#333");
 
-        Grid<Plan> grid = new Grid<>(Plan.class, false);
-        grid.addColumn(Plan::getPlanName).setHeader("Plan").setAutoWidth(true);
-        grid.addColumn(Plan::getDescription).setHeader("Description").setAutoWidth(true);
-        grid.addColumn(Plan::getAssignments).setHeader("Assignments").setAutoWidth(true);
 
-        grid.getStyle().set("border", "1px solid #ddd").set("border-radius", "5px").set("overflow", "hidden");
+        Button signUpButton = new Button("Sign Up");
+        signUpButton.addClickListener(event -> {
+            removeAll(); // Remove login screen
+            showStep1(); // Navigate to Step 1
+        });
 
-        List<Plan> plans = getPlanList();
-        grid.setItems(plans);
 
-        mainContent.add(title, grid);
+        VerticalLayout loginLayout = new VerticalLayout(heading, emailField, passwordField, loginButton, signUpButton );
+        loginLayout.setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+        loginLayout.setWidthFull();
+        setJustifyContentMode(JustifyContentMode.CENTER);
+        setSizeFull();
 
-        // Combine Sidebar and Main Content
-        HorizontalLayout contentLayout = new HorizontalLayout(sidebar, mainContent);
-        contentLayout.setSizeFull();
-        contentLayout.setFlexGrow(1, mainContent);
-
-        // Add Components to Main Layout
-        add(header, contentLayout);
-        setSizeFull(); // Ensure the content is full screen
-        getStyle().set("background-color", "#f9f9f9");
+        add(loginLayout);
     }
 
-    private Button createSidebarButton(String text) {
-        Button button = new Button(text);
-        button.setWidthFull();
-        button.getStyle()
-                .set("text-align", "left")
-                .set("background", "none")
-                .set("border", "none")
-                .set("padding", "10px")
-                .set("font-size", "16px")
-                .set("color", "#555")
-                .set("cursor", "pointer");
-        return button;
+    private void showStep1() {
+        Div step1Heading = new Div();
+        step1Heading.setText("Step 1: Create Your Account");
+        step1Heading.getStyle()
+                .set("font-size", "20px")
+                .set("font-weight", "bold");
+
+        TextField nameField = new TextField("Name");
+        TextField emailField = new TextField("Email");
+        PasswordField passwordField = new PasswordField("Password");
+        PasswordField confirmPasswordField = new PasswordField("Confirm Password");
+
+        Button nextButton = new Button("Next");
+        nextButton.addClickListener(event -> {
+            if (!passwordField.getValue().equals(confirmPasswordField.getValue())) {
+                Notification.show("Passwords do not match!", 3000, Notification.Position.MIDDLE);
+            } else {
+                // Store the values from Step 1
+                name = nameField.getValue();
+                email = emailField.getValue();
+                password = passwordField.getValue();
+
+                removeAll(); // Remove Step 1 screen
+                showStep2(); // Navigate to Step 2
+            }
+        });
+
+        VerticalLayout step1Layout = new VerticalLayout(step1Heading, nameField, emailField, passwordField, confirmPasswordField, nextButton);
+        step1Layout.setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+        step1Layout.setWidthFull();
+        setJustifyContentMode(JustifyContentMode.CENTER);
+
+        add(step1Layout);
     }
 
-    private List<Plan> getPlanList() {
-        List<Plan> plans = new ArrayList<>();
-        plans.add(new Plan("Strength and Conditioning", "3-day a week strength and conditioning plan.", "10 users"));
-        plans.add(new Plan("Fat Loss", "A 30-day fat loss plan for beginners.", "5 users"));
-        plans.add(new Plan("Muscle Gain", "A 60-day muscle gain plan for intermediate users.", "2 users"));
-        plans.add(new Plan("Endurance Training", "An endurance training plan for advanced users.", "8 users"));
-        return plans;
+    private void showStep2() {
+        Div step2Heading = new Div();
+        step2Heading.setText("Step 2: Enter Your Details");
+        step2Heading.getStyle()
+                .set("font-size", "20px")
+                .set("font-weight", "bold");
+
+        TextField heightField = new TextField("Height (cm)");
+        TextField weightField = new TextField("Weight (kg)");
+        TextField ageField = new TextField("Age");
+        RadioButtonGroup<String> sexGroup = new RadioButtonGroup<>();
+        sexGroup.setLabel("Sex");
+        sexGroup.setItems("Male", "Female", "Other");
+
+        Button nextButton = new Button("Next");
+        nextButton.addClickListener(event -> {
+            if (heightField.isEmpty() || weightField.isEmpty() || ageField.isEmpty() || sexGroup.isEmpty()) {
+                Notification.show("Please fill out all fields!", 3000, Notification.Position.MIDDLE);
+            } else {
+                // Store the values from Step 2
+                height = Float.parseFloat(heightField.getValue());
+                weight = Float.parseFloat(weightField.getValue());
+                age = Integer.parseInt(ageField.getValue());
+                sex = sexGroup.getValue();
+
+                removeAll(); // Remove Step 2 screen
+                showStep3(); // Navigate to Step 3
+            }
+        });
+
+        VerticalLayout step2Layout = new VerticalLayout(step2Heading, heightField, weightField, ageField, sexGroup, nextButton);
+        step2Layout.setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+        step2Layout.setWidthFull();
+        setJustifyContentMode(JustifyContentMode.CENTER);
+
+        add(step2Layout);
     }
 
-    public static class Plan {
-        private String planName;
-        private String description;
-        private String assignments;
+    private void showStep3() {
+        Div step3Heading = new Div();
+        step3Heading.setText("Step 3: Select Your Goal");
+        step3Heading.getStyle()
+                .set("font-size", "20px")
+                .set("font-weight", "bold");
 
-        public Plan(String planName, String description, String assignments) {
-            this.planName = planName;
-            this.description = description;
-            this.assignments = assignments;
-        }
+        RadioButtonGroup<String> goalGroup = new RadioButtonGroup<>();
+        goalGroup.setLabel("Goal");
+        goalGroup.setItems("Weight Loss", "Fat Loss", "Muscle Gain", "Yoga", "Balance Maintenance");
 
-        public String getPlanName() {
-            return planName;
-        }
 
-        public String getDescription() {
-            return description;
-        }
+        Button finishButton = new Button("Finish");
+        finishButton.addClickListener(event -> {
+            if (goalGroup.isEmpty()) {
+                Notification.show("Please select a goal!", 3000, Notification.Position.MIDDLE);
+            } else {
+                // Save the client to the database
+                Client client = new Client(name, email, password, age, height, weight, sex, goalGroup.getValue());
+                clientRepository.save(client);
 
-        public String getAssignments() {
-            return assignments;
-        }
+                Notification.show("Signup successful! Please login.", 3000, Notification.Position.MIDDLE);
+
+                // Clear session-related signup data (optional)
+                name = null;
+                email = null;
+                password = null;
+                age = 0;
+                height = Float.parseFloat(null);
+                weight = Float.parseFloat(null);
+                sex = null;
+
+                // Navigate back to the login page
+                removeAll();
+                showLoginPage();
+            }
+        });
+
+        VerticalLayout step3Layout = new VerticalLayout(step3Heading, goalGroup, finishButton);
+        step3Layout.setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+        step3Layout.setWidthFull();
+        setJustifyContentMode(JustifyContentMode.CENTER);
+
+        add(step3Layout);
+
+
     }
 }
+
+
