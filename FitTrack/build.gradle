@@ -1,42 +1,40 @@
 plugins {
+	id 'org.springframework.boot' version '2.7.8'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
-	id 'org.springframework.boot' version '3.3.6'
-	id 'io.spring.dependency-management' version '1.1.6'
-	id 'com.vaadin' version '24.5.5'
+	id 'war' // If you're building a WAR file
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
-
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
-}
+sourceCompatibility = '11'
 
 repositories {
 	mavenCentral()
-}
-
-ext {
-	set('vaadinVersion', "24.5.5")
+	// If you need to add Spring repositories
+	maven { url 'https://repo.spring.io/milestone' }
 }
 
 dependencies {
+	// Spring Boot and Vaadin dependencies
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'com.vaadin:vaadin-spring-boot-starter'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.h2database:h2'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'com.vaadin:vaadin-spring-boot-starter:23.0.0' // Ensure correct Vaadin version
+
+	// Database dependencies (H2 for example, or use PostgreSQL/MySQL depending on your choice)
+	implementation 'com.h2database:h2' // For an in-memory database
+	// implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Uncomment for PostgreSQL/MySQL
+
+	// Vaadin (frontend UI components)
+	implementation 'com.vaadin:vaadin-core:23.0.0'
+
+	// Spring Boot starter for web (REST APIs, etc)
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// Testing dependencies
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-dependencyManagement {
-	imports {
-		mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
-	}
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
 }
