@@ -1,0 +1,1 @@
+FitTrack, A Fitness Tracking Application, offer a robust platform for users to manage their fitness journey, while also providing administrators with permissions to manage user accounts, and fitness plans, and track overall performance.
