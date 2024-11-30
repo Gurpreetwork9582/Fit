@@ -2,3 +2,10 @@ FitTrack, a fitness-tracking application, offers a robust platform for users to 
 
 Navigation through the Application:
 1. Sign in Page![Screen Shot 2024-11-29 at 7 50 35 PM](https://github.com/user-attachments/assets/7cd77a0c-40c9-475a-b75a-0a8ecd83fcc1)
+2. Sing up Page, Which asks the user to put username and password as well as height, Weight, Age, Gender: ![Screen Shot 2024-11-29 at 7 51 40 PM](https://github.com/user-attachments/assets/bd18593e-443f-4170-9d37-a125c6eb0675) ![Screen Shot 2024-11-29 at 7 53 04 PM](https://github.com/user-attachments/assets/af6390b1-d974-4376-9e77-b62e9d6a0fd1)
+3. User UI:
+4. Trainer UI: ![Screen Shot 2024-11-29 at 7 54 37 PM](https://github.com/user-attachments/assets/66ae457f-bb5d-4fca-a175-8adbefc4a334)
+![Screen Shot 2024-11-29 at 7 55 13 PM](https://github.com/user-attachments/assets/eeae782a-0483-47fd-99ed-b822068f092e)
+![Screen Shot 2024-11-29 at 7 55 22 PM](https://github.com/user-attachments/assets/093dd18e-7b6d-4df0-abf7-ef5caf713a82)
+![Screen Shot 2024-11-29 at 7 55 31 PM](https://github.com/user-attachments/assets/c8f8bc09-df2b-4dd5-be9a-13f97ff6e185)
+5. Admin UI: 
