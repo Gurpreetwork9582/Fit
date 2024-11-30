@@ -17,4 +17,11 @@ Navigation through the Application:
 ![Screen Shot 2024-11-29 at 7 55 31 PM](https://github.com/user-attachments/assets/c8f8bc09-df2b-4dd5-be9a-13f97ff6e185)
 
 
-5. Admin UI: 
+5. Admin UI: The Admin can add clients, see all the trainers, and see all the plans
+
+![Screen Shot 2024-11-29 at 10 03 22 PM](https://github.com/user-attachments/assets/0ce6bcbe-43fd-4810-bc0b-ddc8b4157d53)
+![Screen Shot 2024-11-29 at 10 03 28 PM](https://github.com/user-attachments/assets/8c1882dd-dd28-4647-882b-f1f229a6fab6)
+![Screen Shot 2024-11-29 at 10 03 34 PM](https://github.com/user-attachments/assets/490486af-0229-46fa-96fd-519e4fa02abf)
+![Screen Shot 2024-11-29 at 10 03 40 PM](https://github.com/user-attachments/assets/d53d776c-342c-41e7-ad1d-b9ba90058fb1)
+
+
